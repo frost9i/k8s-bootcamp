@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:jammy
+    container_name: mongo
+    restart: 'no'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    # ports:
+      # - 27017:27017
+
+  app:
+    image: epamsergiimoroz1/k8s_app
+    container_name: app
+    restart: 'no'
+    ports:
+      - target: 5000
+        published: 5000
+        protocol: tcp
+        mode: host
+    environment:
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      BG_COLOR: green
+      FAIL_FLAG: 'false'
+    depends_on:
+      - mongo
