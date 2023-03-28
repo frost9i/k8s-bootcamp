@@ -9,3 +9,6 @@ https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-ku
 https://kind.sigs.k8s.io/docs/user/quick-start/  
 https://learn.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig  
   
+### To know:
+https://www.padok.fr/en/blog/minikube-kubeadm-kind-k3s  
+  
