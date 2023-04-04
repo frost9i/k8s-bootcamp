@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app-label
+spec:
+  selector:
+    matchLabels:
+      octopusexport: OctopusExport
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: app-label
+        octopusexport: OctopusExport
+    spec:
+      containers:
+        - name: app
+          image: epamsergiimoroz1/k8s_app
+          # envFrom:
+          #   - configMapRef:
+          #       name: app
+          resources:
+            requests:
+              memory: '64'
+              cpu: '0.2'
+            limits:
+              memory: '128'
+              cpu: '0.5'
+          livenessProbe:
+            httpGet:
+              host: ''
+              path: /healthz
+              port: 5000
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              host: ''
+              path: /healthx
+              port: 5000
+              scheme: HTTP

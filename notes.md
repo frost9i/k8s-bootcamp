@@ -8,3 +8,7 @@
 ```
   
 *TODO*: Add description for used ports.  
+
+# Try:
+kubectl api-resources --namespaced=true
+kubectl api-resources --namespaced=false
