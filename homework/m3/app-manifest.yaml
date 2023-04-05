@@ -21,7 +21,7 @@ spec:
           image: epamsergiimoroz1/k8s_app:latest
           env:
           - name: MONGO_HOST
-            value: mongo.default
+            value: srv-mongo
           - name: MONGO_PORT
             value: '27017'
           - name: MONGO_USERNAME
@@ -29,7 +29,7 @@ spec:
           - name: MONGO_PASSWORD
             value: example
           - name: BG_COLOR
-            value: green'
+            value: green
           - name: FAIL_FLAG
             value: 'false'
           resources:
@@ -41,14 +41,15 @@ spec:
               cpu: "0.5"
           ports:
             - containerPort: 5000
-          # livenessProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 5000
-          # readinessProbe:
-          #   httpGet:
-          #     path: /healthx
-          #     port: 5000
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+          readinessProbe:
+            timeoutSeconds: 3
+            httpGet:
+              path: /healthx
+              port: 5000
       imagePullSecrets:
       - name: epamsergiimoroz1
 
@@ -56,43 +57,58 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: myk8sapp
+  name: srv-myk8sapp
 spec:
   type: LoadBalancer
   selector:
     app: myk8sapp
-    # run: myk8sapp
   ports:
   - protocol: TCP
     port: 80
     targetPort: 5000
 
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: nginx
-# spec:
-#   ingressClassName: nginx
-#   rules:
-#   - host: local.myk8sapp.com
-#     http:
-#       paths:
-#       - path: /
-#         pathType: Prefix
-#         backend:
-#           service:
-#             name: myk8sapp
-#             port:
-#               number: 5000
-# status:
-#   loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: srv-mongo
+spec:
+  type: LoadBalancer
+  selector:
+    app: mongo
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "local.myk8sapp.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: srv-myk8sapp
+            port:
+              number: 80
+status:
+  loadBalancer: {}
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongo
+  labels:
+    app: mongo
 spec:
   replicas: 1
   selector:
@@ -120,4 +136,4 @@ spec:
             memory: "256Mi"
             cpu: "0.5"
         ports:
-          - containerPort: 27017
+        - containerPort: 27017
