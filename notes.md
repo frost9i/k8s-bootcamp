@@ -12,3 +12,10 @@
 # Try:
 kubectl api-resources --namespaced=true
 kubectl api-resources --namespaced=false
+
+kubectl explain deployment.spec --recursive
+kubectl proxy --port=8880  
+  
+kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8090:80
+Forwarding from 127.0.0.1:8090 -> 80
+Forwarding from [::1]:8090 -> 80

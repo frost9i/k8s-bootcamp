@@ -11,5 +11,7 @@ ping timeout?
 
 ## Post module 3  
 1) in order to access mongo you need service?  
-  
+2) no EXTERNAL-IP for ingress
+k get ing && k get services -A
+k api-resources
   

@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,7 +53,6 @@ spec:
               port: 5000
       imagePullSecrets:
       - name: epamsergiimoroz1
-
 ---
 apiVersion: v1
 kind: Service
@@ -61,14 +61,15 @@ metadata:
 spec:
   selector:
     app: myk8sapp
-  type: NodePort
-  # type: LoadBalancer
+  # type: NodePort
+  # type: ClusterIP
+  type: LoadBalancer
   ports:
   - protocol: TCP
+    name: srvapp
     port: 8080
     targetPort: 5000
-    nodePort: 30500
-
+    # nodePort: 30500
 ---
 apiVersion: v1
 kind: Service
@@ -77,34 +78,36 @@ metadata:
 spec:
   selector:
     app: mongo
-  type: NodePort
-  # type: LoadBalancer
+  # type: NodePort
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 27017
     targetPort: 27017
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: "local.myk8sapp.com"
+  - host: local.myk8sapp.test
     http:
       paths:
-      - path: "/"
+      - path: /
         pathType: Prefix
+        # pathType: ImplementationSpecific
         backend:
           service:
             name: srv-myk8sapp
             port:
-              number: 80
+              number: 8080
 status:
   loadBalancer: {}
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -140,3 +143,4 @@ spec:
             cpu: "0.5"
         ports:
         - containerPort: 27017
+---
